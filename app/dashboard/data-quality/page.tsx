@@ -53,10 +53,10 @@ export default function DataQualityPage() {
 
     for (const shop of activeShops) {
       // Missing sales
-      const shopSales = sales?.filter(s => s.shop_id === shop.id) || [];
+      const shopSales = sales?.filter(s => (s as any).shop_id === shop.id) || [];
       const missingSalesDays = days.filter(day => {
         const dateStr = format(day, 'yyyy-MM-dd');
-        return !shopSales.some(s => s.sale_date === dateStr);
+        return !shopSales.some(s => (s as any).sale_date === dateStr);
       });
 
       if (missingSalesDays.length > 5) {
@@ -69,7 +69,7 @@ export default function DataQualityPage() {
       }
 
       // Missing payroll
-      const shopPayrolls = payrolls?.filter(p => p.shop_id === shop.id) || [];
+      const shopPayrolls = payrolls?.filter(p => (p as any).shop_id === shop.id) || [];
       if (shopPayrolls.length < 3) {
         missing.push({
           type: 'payroll',
@@ -87,22 +87,22 @@ export default function DataQualityPage() {
 
     for (const sale of sales || []) {
       // Check for zero sales
-      if (Number(sale.total_amount) === 0) {
+      if (Number((sale as any).total_amount) === 0) {
         issues.push({
           type: 'Zero Sales',
-          shop: sale.shops?.name,
-          date: sale.sale_date,
+          shop: (sale as any).shops?.name,
+          date: (sale as any).sale_date,
           message: 'Sales amount is zero',
           severity: 'low'
         });
       }
 
       // Check cash > total
-      if (Number(sale.cash_amount) > Number(sale.total_amount)) {
+      if (Number((sale as any).cash_amount) > Number((sale as any).total_amount)) {
         issues.push({
           type: 'Invalid Cash',
-          shop: sale.shops?.name,
-          date: sale.sale_date,
+          shop: (sale as any).shops?.name,
+          date: (sale as any).sale_date,
           message: 'Cash amount exceeds total sales',
           severity: 'high'
         });
@@ -112,12 +112,12 @@ export default function DataQualityPage() {
     // Check for duplicate dates
     const salesByShopDate = new Map();
     for (const sale of sales || []) {
-      const key = `${sale.shop_id}-${sale.sale_date}`;
+      const key = `${(sale as any).shop_id}-${(sale as any).sale_date}`;
       if (salesByShopDate.has(key)) {
         issues.push({
           type: 'Duplicate',
-          shop: sale.shops?.name,
-          date: sale.sale_date,
+          shop: (sale as any).shops?.name,
+          date: (sale as any).sale_date,
           message: 'Duplicate sales entry detected',
           severity: 'high'
         });
