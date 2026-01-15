@@ -62,14 +62,14 @@ function ExpensesContent() {
     const { data } = await getExpensesByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     if (data) {
       setExpenses(data);
-      const total = data.reduce((sum, e) => sum + Number((e as any).amount), 0);
+      const total = data.reduce((sum, e) => sum + Number(e.amount), 0);
       setTotalExpenses(total);
 
       // Group by category for chart
       const categoryMap = new Map();
       data.forEach((exp) => {
-        const catName = (exp as any).expense_categories?.name || 'Unknown';
-        categoryMap.set(catName, (categoryMap.get(catName) || 0) + Number((exp as any).amount));
+        const catName = exp.expense_categories?.name || 'Unknown';
+        categoryMap.set(catName, (categoryMap.get(catName) || 0) + Number(exp.amount));
       });
       const chartDataTemp = Array.from(categoryMap.entries()).map(([name, value]) => ({ name, value }));
       setChartData(chartDataTemp);

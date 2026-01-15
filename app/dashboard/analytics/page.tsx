@@ -30,9 +30,9 @@ function AnalyticsContent() {
     const { data: expenses } = await getExpensesByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     const { data: payrolls } = await getPayrollsByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
 
-    const totalSales = sales?.reduce((sum, s) => sum + Number((s as any).total_amount), 0) || 0;
-    const totalExpenses = expenses?.reduce((sum, e) => sum + Number((e as any).amount), 0) || 0;
-    const totalPayroll = payrolls?.reduce((sum, p) => sum + Number((p as any).total_amount), 0) || 0;
+    const totalSales = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const totalExpenses = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const totalPayroll = payrolls?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
     const netProfit = totalSales - totalExpenses - totalPayroll;
 
     setWaterfallData([
@@ -45,8 +45,8 @@ function AnalyticsContent() {
     // Heatmap Data (Sales by Day of Week)
     const dayMap: Record<number, number> = {};
     sales?.forEach(s => {
-      const day = getDay(new Date((s as any).sale_date));
-      dayMap[day] = (dayMap[day] || 0) + Number((s as any).total_amount);
+      const day = getDay(new Date(s.sale_date));
+      dayMap[day] = (dayMap[day] || 0) + Number(s.total_amount);
     });
 
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -61,7 +61,7 @@ function AnalyticsContent() {
     const { data: targets } = await getTargets(selectedShops.length ? selectedShops : undefined);
     if (targets && targets.length > 0) {
       const target = targets[0];
-      const targetAmount = Number((target as any).sales_target);
+      const targetAmount = Number(target.sales_target);
       const percentage = (totalSales / targetAmount) * 100;
       setGaugeData({ current: totalSales, target: targetAmount, percentage });
     }
@@ -74,8 +74,8 @@ function AnalyticsContent() {
     for (const shop of shops || []) {
       const { data: shopSales } = await getSalesByDateRange(last30, new Date(), [shop.id]);
       const dailyData = eachDayOfInterval({ start: last30, end: new Date() }).map(date => {
-        const daySales = shopSales?.filter(s => format(new Date((s as any).sale_date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
-        return daySales?.reduce((sum, s) => sum + Number((s as any).total_amount), 0) || 0;
+        const daySales = shopSales?.filter(s => format(new Date(s.sale_date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
+        return daySales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
       });
       sparklines[shop.name] = dailyData;
     }
