@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { ShopFilter } from '@/components/filters/ShopFilter';
 import { DateFilter } from '@/components/filters/DateFilter';
+import { MobileFilterDrawer } from '@/components/filters/MobileFilterDrawer';
 import { FilterProvider, useFilters } from '@/lib/context/FilterContext';
 import { getExpensesByDateRange, getShops, getExpenseCategories, createExpense, updateExpense, deleteExpense } from '@/lib/supabase/queries';
 import { formatCurrency, formatDate } from '@/lib/utils/formatting';
@@ -172,7 +173,7 @@ function ExpensesContent() {
   const paginatedExpenses = expenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-4 md:pt-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Expenses</h1>
@@ -190,23 +191,94 @@ function ExpensesContent() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <MobileFilterDrawer />
+      <div className="hidden lg:flex gap-4">
         <ShopFilter />
         <DateFilter />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Mobile Layout */}
+      <div className="lg:hidden space-y-3">
+        {/* Row 1: 3 stats in single row */}
+        <div className="grid grid-cols-3 gap-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xs font-medium text-muted-foreground">Total</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg font-bold">{formatCurrency(totalExpenses)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xs font-medium text-muted-foreground">Count</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg font-bold">{expenses.length}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {expenses.length > 0 ? `Avg: ${formatCurrency(totalExpenses / expenses.length)}` : 'No entries'}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xs font-medium text-muted-foreground">Categories</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg font-bold">{chartData.length}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Row 2: Chart with legend on right */}
         <Card>
           <CardHeader>
-            <CardTitle>Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Expense Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{formatCurrency(totalExpenses)}</p>
+            {chartData.length > 0 ? (
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <ResponsiveContainer width="100%" height={220}>
+                    <PieChart>
+                      <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40} paddingAngle={5}>
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex flex-col gap-1 min-w-[60px]">
+                  {chartData.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-1 text-xs">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                      <span className="truncate">{entry.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-8">No data</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">{formatCurrency(totalExpenses)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Expense Breakdown</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Expense Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
@@ -226,6 +298,26 @@ function ExpensesContent() {
             )}
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Expenses Count</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">{expenses.length}</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              {expenses.length > 0 ? `Avg: ${formatCurrency(totalExpenses / expenses.length)}` : 'No entries'}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">By Category</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">{chartData.length}</p>
+            <p className="text-sm text-muted-foreground mt-2">Expense categories</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -240,39 +332,76 @@ function ExpensesContent() {
               <p className="text-muted-foreground mb-4">Track your shop expenses to see profit margins clearly.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Date</th>
-                    <th className="text-left p-2">Shop</th>
-                    <th className="text-left p-2">Category</th>
-                    <th className="text-right p-2">Amount</th>
-                    <th className="text-left p-2">Notes</th>
-                    <th className="text-right p-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedExpenses.map((expense) => (
-                    <tr key={expense.id} className="border-b">
-                      <td className="p-2">{formatDate(expense.expense_date)}</td>
-                      <td className="p-2">{expense.shops?.name}</td>
-                      <td className="p-2">{expense.expense_categories?.name}</td>
-                      <td className="text-right p-2">{formatCurrency(Number(expense.amount))}</td>
-                      <td className="p-2">{expense.notes || '-'}</td>
-                      <td className="text-right p-2">
-                        <Button variant="ghost" size="icon" onClick={() => openForm(expense)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(expense.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-2">Date</th>
+                      <th className="text-left p-2">Shop</th>
+                      <th className="text-left p-2">Category</th>
+                      <th className="text-right p-2">Amount</th>
+                      <th className="text-left p-2">Notes</th>
+                      <th className="text-right p-2">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedExpenses.map((expense) => (
+                      <tr key={expense.id} className="border-b">
+                        <td className="p-2">{formatDate(expense.expense_date)}</td>
+                        <td className="p-2">{expense.shops?.name}</td>
+                        <td className="p-2">{expense.expense_categories?.name}</td>
+                        <td className="text-right p-2">{formatCurrency(Number(expense.amount))}</td>
+                        <td className="p-2">{expense.notes || '-'}</td>
+                        <td className="text-right p-2">
+                          <Button variant="ghost" size="icon" onClick={() => openForm(expense)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(expense.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="lg:hidden space-y-3">
+                {paginatedExpenses.map((expense) => (
+                  <Card key={expense.id} className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start gap-2">
+                        <div>
+                          <p className="font-semibold text-sm">{expense.shops?.name}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(expense.expense_date)}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openForm(expense)} className="min-h-[36px] min-w-[36px]">
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(expense.id)} className="min-h-[36px] min-w-[36px]">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <div>
+                          <p className="text-muted-foreground text-xs">Category</p>
+                          <p className="font-medium">{expense.expense_categories?.name}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-muted-foreground text-xs">Amount</p>
+                          <p className="font-medium">{formatCurrency(Number(expense.amount))}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
           )}
           {expenses.length > itemsPerPage && (
             <div className="flex items-center justify-between mt-4">
@@ -344,7 +473,7 @@ function ExpensesContent() {
               <div>
                 <Label>Notes</Label>
                 <textarea
-                  className="w-full min-h-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="w-full min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />

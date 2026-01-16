@@ -98,7 +98,7 @@ function ProfitContent() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-4 md:pt-6">
       <div>
         <h1 className="text-3xl font-bold">Profit</h1>
         <p className="text-muted-foreground">Analyze profit margins and trends</p>
@@ -230,34 +230,73 @@ function ProfitContent() {
               <p className="text-muted-foreground">Add sales, expenses, and payroll data to see profit insights.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Shop</th>
-                    <th className="text-right p-2">Sales</th>
-                    <th className="text-right p-2">Expenses</th>
-                    <th className="text-right p-2">Payroll</th>
-                    <th className="text-right p-2">Profit</th>
-                    <th className="text-right p-2">Margin %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detailData.map((row, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="p-2">{row.name}</td>
-                      <td className="text-right p-2">{formatCurrency(row.sales)}</td>
-                      <td className="text-right p-2">{formatCurrency(row.expenses)}</td>
-                      <td className="text-right p-2">{formatCurrency(row.payroll)}</td>
-                      <td className={`text-right p-2 font-bold ${row.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(row.profit)}
-                      </td>
-                      <td className="text-right p-2">{row.margin.toFixed(1)}%</td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-2">Shop</th>
+                      <th className="text-right p-2">Sales</th>
+                      <th className="text-right p-2">Expenses</th>
+                      <th className="text-right p-2">Payroll</th>
+                      <th className="text-right p-2">Profit</th>
+                      <th className="text-right p-2">Margin %</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {detailData.map((row, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="p-2">{row.name}</td>
+                        <td className="text-right p-2">{formatCurrency(row.sales)}</td>
+                        <td className="text-right p-2">{formatCurrency(row.expenses)}</td>
+                        <td className="text-right p-2">{formatCurrency(row.payroll)}</td>
+                        <td className={`text-right p-2 font-bold ${row.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {formatCurrency(row.profit)}
+                        </td>
+                        <td className="text-right p-2">{row.margin.toFixed(1)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="lg:hidden space-y-3">
+                {detailData.map((row, idx) => (
+                  <Card key={idx} className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start gap-2">
+                        <div>
+                          <p className="font-semibold text-sm">{row.name}</p>
+                          <p className={`text-sm font-bold ${row.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {formatCurrency(row.profit)} Profit
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">Margin</p>
+                          <p className="font-medium">{row.margin.toFixed(1)}%</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm border-t pt-2">
+                        <div>
+                          <p className="text-muted-foreground text-xs">Sales</p>
+                          <p className="font-medium">{formatCurrency(row.sales)}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-xs">Expenses</p>
+                          <p className="font-medium">{formatCurrency(row.expenses)}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-xs">Payroll</p>
+                          <p className="font-medium">{formatCurrency(row.payroll)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

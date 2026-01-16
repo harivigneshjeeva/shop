@@ -123,7 +123,7 @@ export default function TargetsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-4 md:pt-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Targets & Goals</h1>
@@ -198,54 +198,118 @@ export default function TargetsPage() {
               <Button onClick={() => openForm()}>Add Target</Button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Shop</th>
-                    <th className="text-left p-2">Type</th>
-                    <th className="text-left p-2">Period</th>
-                    <th className="text-right p-2">Target</th>
-                    <th className="text-right p-2">Actual</th>
-                    <th className="text-right p-2">Achievement</th>
-                    <th className="text-right p-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {targets.map((target) => {
-                    const achievement = achievements[target.id];
-                    const isAchieved = achievement && achievement.percentage >= 100;
-                    
-                    return (
-                      <tr key={target.id} className="border-b">
-                        <td className="p-2">{target.shops?.name}</td>
-                        <td className="p-2 capitalize">{target.target_type}</td>
-                        <td className="p-2">{formatDate(target.target_date)}</td>
-                        <td className="text-right p-2">{formatCurrency(Number(target.sales_target))}</td>
-                        <td className="text-right p-2">
-                          {achievement ? formatCurrency(achievement.actual) : '-'}
-                        </td>
-                        <td className="text-right p-2">
-                          {achievement && (
-                            <span className={`font-medium ${isAchieved ? 'text-green-600' : 'text-orange-600'}`}>
-                              {achievement.percentage.toFixed(1)}%
-                            </span>
-                          )}
-                        </td>
-                        <td className="text-right p-2">
-                          <Button variant="ghost" size="icon" onClick={() => openForm(target)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(target.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-2">Shop</th>
+                      <th className="text-left p-2">Type</th>
+                      <th className="text-left p-2">Period</th>
+                      <th className="text-right p-2">Target</th>
+                      <th className="text-right p-2">Actual</th>
+                      <th className="text-right p-2">Achievement</th>
+                      <th className="text-right p-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {targets.map((target) => {
+                      const achievement = achievements[target.id];
+                      const isAchieved = achievement && achievement.percentage >= 100;
+                      
+                      return (
+                        <tr key={target.id} className="border-b">
+                          <td className="p-2">{target.shops?.name}</td>
+                          <td className="p-2 capitalize">{target.target_type}</td>
+                          <td className="p-2">{formatDate(target.target_date)}</td>
+                          <td className="text-right p-2">{formatCurrency(Number(target.sales_target))}</td>
+                          <td className="text-right p-2">
+                            {achievement ? formatCurrency(achievement.actual) : '-'}
+                          </td>
+                          <td className="text-right p-2">
+                            {achievement && (
+                              <span className={`font-medium ${isAchieved ? 'text-green-600' : 'text-orange-600'}`}>
+                                {achievement.percentage.toFixed(1)}%
+                              </span>
+                            )}
+                          </td>
+                          <td className="text-right p-2">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(target)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(target.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="lg:hidden space-y-3">
+                {targets.map((target) => {
+                  const achievement = achievements[target.id];
+                  const isAchieved = achievement && achievement.percentage >= 100;
+                  
+                  return (
+                    <Card key={target.id} className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start gap-2">
+                          <div>
+                            <p className="font-semibold text-sm">{target.shops?.name}</p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                              {target.target_type} • {formatDate(target.target_date)}
+                            </p>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(target)} className="min-h-[36px] min-w-[36px]">
+                              <Edit className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(target.id)} className="min-h-[36px] min-w-[36px]">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                        {achievement && (
+                          <>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${isAchieved ? 'bg-green-600' : 'bg-blue-600'}`}
+                                style={{ width: `${Math.min(achievement.percentage, 100)}%` }}
+                              />
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                              <div className="flex items-center gap-2">
+                                {isAchieved ? (
+                                  <TrendingUp className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <TrendingDown className="h-4 w-4 text-orange-600" />
+                                )}
+                                <span className={`font-medium ${isAchieved ? 'text-green-600' : 'text-orange-600'}`}>
+                                  {achievement.percentage.toFixed(1)}%
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-muted-foreground text-xs">Target</p>
+                                <p className="font-medium">{formatCurrency(Number(target.sales_target))}</p>
+                              </div>
+                            </div>
+                            <div className="text-sm">
+                              <span className="text-muted-foreground">Actual: </span>
+                              <span className="font-medium">{formatCurrency(achievement.actual)}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

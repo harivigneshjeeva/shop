@@ -265,7 +265,7 @@ function PayrollContent() {
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-4 lg:space-y-6 pt-4 md:pt-6">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold">Payroll</h1>
@@ -322,7 +322,7 @@ function PayrollContent() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Payroll</CardTitle>
@@ -330,6 +330,37 @@ function PayrollContent() {
           <CardContent>
             <p className="text-2xl lg:text-3xl font-bold">{formatCurrency(totalPayroll)}</p>
             <p className="text-sm text-muted-foreground mt-2">{payrolls.length} payroll entries</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Weekly Avg</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">
+              {payrolls.length > 0 ? formatCurrency(totalPayroll / payrolls.length) : formatCurrency(0)}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">Per entry</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Shop Count</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">
+              {payrolls.length > 0 ? new Set(payrolls.map((p: any) => p.shop_id)).size : 0}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">Shops with payroll</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Period</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-lg lg:text-xl font-bold">Wkly</p>
+            <p className="text-sm text-muted-foreground mt-2">Payroll period</p>
           </CardContent>
         </Card>
       </div>

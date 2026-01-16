@@ -42,6 +42,7 @@ function SalesContent() {
   const [shopSalesData, setShopSalesData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [showAllShops, setShowAllShops] = useState(false);
 
   useEffect(() => {
     loadShops();
@@ -215,7 +216,7 @@ function SalesContent() {
   const paginatedSales = sales.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-4 lg:space-y-6 pt-4 md:pt-6">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold">Sales</h1>
@@ -239,7 +240,7 @@ function SalesContent() {
         <DateFilter />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Sales</CardTitle>
@@ -288,6 +289,17 @@ function SalesContent() {
             <p className="text-2xl lg:text-3xl font-bold">{formatCurrency(totalSales - totalCash)}</p>
             <p className="text-sm text-muted-foreground mt-2">
               {totalSales > 0 ? ((totalSales - totalCash) / totalSales * 100).toFixed(1) : 0}% of total
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl lg:text-3xl font-bold">{sales.length}</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              {sales.length > 0 ? `Avg: ${formatCurrency(totalSales / sales.length)}` : 'No entries'}
             </p>
           </CardContent>
         </Card>
@@ -361,7 +373,8 @@ function SalesContent() {
             <CardTitle>Sales by Shop</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            {/* Desktop Layout - Horizontal bars */}
+            <div className="hidden lg:block space-y-4">
               {shopSalesData.map((shop, idx) => {
                 const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
                 const color = colors[idx % colors.length];
@@ -380,6 +393,51 @@ function SalesContent() {
                 );
               })}
             </div>
+
+            {/* Mobile Layout - Compact with expand/collapse */}
+            <div className="lg:hidden">
+              <div className="space-y-2">
+                {shopSalesData.slice(0, showAllShops ? undefined : 5).map((shop, idx) => {
+                  const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
+                  const color = colors[idx % colors.length];
+                  const percentage = totalSales > 0 ? (shop.sales / totalSales) * 100 : 0;
+                  return (
+                    <Card key={idx} className="p-2 border">
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-medium truncate max-w-[120px]">{shop.shop}</span>
+                          <span className="font-semibold">{formatCurrency(shop.sales)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full transition-all" 
+                              style={{ width: `${percentage}%`, backgroundColor: color }}
+                            />
+                          </div>
+                          <span className="text-xs font-medium w-10 text-right" style={{ color: color }}>
+                            {percentage.toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+              
+              {shopSalesData.length > 5 && (
+                <div className="text-center mt-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => setShowAllShops(!showAllShops)}
+                  >
+                    {showAllShops ? 'Show Less' : `View All (${shopSalesData.length})`}
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -396,41 +454,85 @@ function SalesContent() {
               <p className="text-muted-foreground mb-4">Start by recording your first sale using the "Add Sale" button above.</p>
             </div>
           ) : (
-            <ResponsiveTable>
-              <table className="w-full min-w-[640px]">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-3">Date</th>
-                    <th className="text-left p-3">Shop</th>
-                    <th className="text-right p-3">Total Sales</th>
-                    <th className="text-right p-3">Cash</th>
-                    <th className="text-right p-3">Card/Digital</th>
-                    <th className="text-left p-3">Notes</th>
-                    <th className="text-right p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedSales.map((sale) => (
-                    <tr key={sale.id} className="border-b">
-                      <td className="p-3">{formatDate(sale.sale_date)}</td>
-                      <td className="p-3">{sale.shops?.name}</td>
-                      <td className="text-right p-3">{formatCurrency(Number(sale.total_amount))}</td>
-                      <td className="text-right p-3">{formatCurrency(Number(sale.cash_amount))}</td>
-                      <td className="text-right p-3">{formatCurrency(Number(sale.total_amount) - Number(sale.cash_amount))}</td>
-                      <td className="p-3">{sale.notes || '-'}</td>
-                      <td className="text-right p-3">
-                        <Button variant="ghost" size="icon" onClick={() => openForm(sale)} className="min-h-[44px] min-w-[44px]">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(sale.id)} className="min-h-[44px] min-w-[44px]">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </ResponsiveTable>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden lg:block">
+                <ResponsiveTable>
+                  <table className="w-full min-w-[640px]">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3">Date</th>
+                        <th className="text-left p-3">Shop</th>
+                        <th className="text-right p-3">Total Sales</th>
+                        <th className="text-right p-3">Cash</th>
+                        <th className="text-right p-3">Card/Digital</th>
+                        <th className="text-left p-3">Notes</th>
+                        <th className="text-right p-3">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedSales.map((sale) => (
+                        <tr key={sale.id} className="border-b">
+                          <td className="p-3">{formatDate(sale.sale_date)}</td>
+                          <td className="p-3">{sale.shops?.name}</td>
+                          <td className="text-right p-3">{formatCurrency(Number(sale.total_amount))}</td>
+                          <td className="text-right p-3">{formatCurrency(Number(sale.cash_amount))}</td>
+                          <td className="text-right p-3">{formatCurrency(Number(sale.total_amount) - Number(sale.cash_amount))}</td>
+                          <td className="p-3">{sale.notes || '-'}</td>
+                          <td className="text-right p-3">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(sale)} className="min-h-[44px] min-w-[44px]">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(sale.id)} className="min-h-[44px] min-w-[44px]">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </ResponsiveTable>
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="lg:hidden space-y-3">
+                {paginatedSales.map((sale) => (
+                  <Card key={sale.id} className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start gap-2">
+                        <div>
+                          <p className="font-semibold text-sm">{sale.shops?.name}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(sale.sale_date)}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openForm(sale)} className="min-h-[36px] min-w-[36px]">
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(sale.id)} className="min-h-[36px] min-w-[36px]">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-muted-foreground text-xs">Total Sales</p>
+                          <p className="font-medium">{formatCurrency(Number(sale.total_amount))}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-xs">Cash</p>
+                          <p className="font-medium">{formatCurrency(Number(sale.cash_amount))}</p>
+                        </div>
+                      </div>
+                      {sale.notes && (
+                        <div className="text-xs text-muted-foreground pt-2 border-t">
+                          <span className="font-medium">Notes:</span> {sale.notes}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </>
           )}
           {sales.length > itemsPerPage && (
             <div className="flex items-center justify-between mt-4">
