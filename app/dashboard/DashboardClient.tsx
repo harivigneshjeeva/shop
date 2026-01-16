@@ -254,7 +254,7 @@ function DashboardContent() {
 
       {loading ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
             <CardSkeleton />
             <CardSkeleton />
             <CardSkeleton />
@@ -262,7 +262,7 @@ function DashboardContent() {
           </div>
         </>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
           <KPICard
             title="Today's Sales"
             value={todaySales}
@@ -320,11 +320,11 @@ function DashboardContent() {
               <CardTitle>Sales vs Expenses (Last 7 Days)</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="Sales" fill="#3b82f6" />
@@ -345,11 +345,11 @@ function DashboardContent() {
                 </div>
               ) : (
                 <>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={profitByShopData}>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={profitByShopData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="shop" />
-                      <YAxis />
+                      <XAxis dataKey="shop" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
                       <Tooltip 
                         formatter={(value: any, name: string, props: any) => {
                           const actualValue = props.payload.actualProfit;
@@ -374,7 +374,7 @@ function DashboardContent() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm font-medium">Top Selling Day</CardTitle>
@@ -424,11 +424,11 @@ function DashboardContent() {
                   No expense data available
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={expenseTrends} layout="vertical">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={expenseTrends} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={120} />
+                    <XAxis type="number" tick={{ fontSize: 12 }} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} />
                     <Tooltip formatter={(value: any) => formatCurrency(value)} />
                     <Bar dataKey="amount" fill="#ef4444" />
                   </BarChart>
