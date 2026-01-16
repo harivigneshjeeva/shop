@@ -33,9 +33,9 @@ function ProfitContent() {
     const { data: payrolls } = await getPayrollsByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     const { data: shops } = await getShops(true);
 
-    const totalSales = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-    const totalExpenses = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-    const totalPayroll = payrolls?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    const totalSales = sales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+    const totalExpenses = expenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
+    const totalPayroll = payrolls?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
     const profit = totalSales - totalExpenses - totalPayroll;
     
     setTotalProfit(profit);
@@ -51,10 +51,10 @@ function ProfitContent() {
 
     // Profit by shop
     const shopMap = new Map();
-    shops?.forEach(shop => {
-      const shopSales = sales?.filter(s => s.shop_id === shop.id).reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-      const shopExpenses = expenses?.filter(e => e.shop_id === shop.id).reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-      const shopPayroll = payrolls?.filter(p => p.shop_id === shop.id).reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    shops?.forEach((shop: any) => {
+      const shopSales = sales?.filter((s: any) => s.shop_id === shop.id).reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+      const shopExpenses = expenses?.filter((e: any) => e.shop_id === shop.id).reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
+      const shopPayroll = payrolls?.filter((p: any) => p.shop_id === shop.id).reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
       const shopProfit = shopSales - shopExpenses - shopPayroll;
       const shopMargin = shopSales > 0 ? (shopProfit / shopSales) * 100 : 0;
       
@@ -76,12 +76,12 @@ function ProfitContent() {
 
     // Trend data (simplified - daily aggregation)
     const dateMap = new Map();
-    sales?.forEach(s => {
+    sales?.forEach((s: any) => {
       const date = s.sale_date;
       if (!dateMap.has(date)) dateMap.set(date, { sales: 0, expenses: 0, payroll: 0 });
       dateMap.get(date).sales += Number(s.total_amount);
     });
-    expenses?.forEach(e => {
+    expenses?.forEach((e: any) => {
       const date = e.expense_date;
       if (!dateMap.has(date)) dateMap.set(date, { sales: 0, expenses: 0, payroll: 0 });
       dateMap.get(date).expenses += Number(e.amount);

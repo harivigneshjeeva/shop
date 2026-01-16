@@ -24,7 +24,7 @@ export default function DataQualityPage() {
     const last30Days = subDays(today, 30);
 
     const { data: shops } = await getShops();
-    const activeShops = shops?.filter(s => s.status === 'active') || [];
+    const activeShops = shops?.filter((s: any) => s.status === 'active') || [];
 
     const { data: sales } = await getSalesByDateRange(last30Days, today);
     const { data: expenses } = await getExpensesByDateRange(last30Days, today);
@@ -53,10 +53,10 @@ export default function DataQualityPage() {
 
     for (const shop of activeShops) {
       // Missing sales
-      const shopSales = sales?.filter(s => s.shop_id === shop.id) || [];
+      const shopSales = sales?.filter((s: any) => s.shop_id === shop.id) || [];
       const missingSalesDays = days.filter(day => {
         const dateStr = format(day, 'yyyy-MM-dd');
-        return !shopSales.some(s => s.sale_date === dateStr);
+        return !shopSales.some((s: any) => s.sale_date === dateStr);
       });
 
       if (missingSalesDays.length > 5) {
@@ -69,7 +69,7 @@ export default function DataQualityPage() {
       }
 
       // Missing payroll
-      const shopPayrolls = payrolls?.filter(p => p.shop_id === shop.id) || [];
+      const shopPayrolls = payrolls?.filter((p: any) => p.shop_id === shop.id) || [];
       if (shopPayrolls.length < 3) {
         missing.push({
           type: 'payroll',

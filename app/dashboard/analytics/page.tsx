@@ -30,9 +30,9 @@ function AnalyticsContent() {
     const { data: expenses } = await getExpensesByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     const { data: payrolls } = await getPayrollsByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
 
-    const totalSales = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-    const totalExpenses = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-    const totalPayroll = payrolls?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    const totalSales = sales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+    const totalExpenses = expenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
+    const totalPayroll = payrolls?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
     const netProfit = totalSales - totalExpenses - totalPayroll;
 
     setWaterfallData([
@@ -44,7 +44,7 @@ function AnalyticsContent() {
 
     // Heatmap Data (Sales by Day of Week)
     const dayMap: Record<number, number> = {};
-    sales?.forEach(s => {
+    sales?.forEach((s: any) => {
       const day = getDay(new Date(s.sale_date));
       dayMap[day] = (dayMap[day] || 0) + Number(s.total_amount);
     });
@@ -74,8 +74,8 @@ function AnalyticsContent() {
     for (const shop of shops || []) {
       const { data: shopSales } = await getSalesByDateRange(last30, new Date(), [shop.id]);
       const dailyData = eachDayOfInterval({ start: last30, end: new Date() }).map(date => {
-        const daySales = shopSales?.filter(s => format(new Date(s.sale_date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
-        return daySales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+        const daySales = shopSales?.filter((s: any) => format(new Date(s.sale_date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
+        return daySales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
       });
       sparklines[shop.name] = dailyData;
     }

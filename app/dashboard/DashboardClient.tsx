@@ -57,44 +57,44 @@ function DashboardContent() {
 
     // Today's sales
     const { data: todaySalesData } = await getSalesByDateRange(today, today, selectedShops.length ? selectedShops : undefined);
-    const todayTotal = todaySalesData?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const todayTotal = todaySalesData?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
     setTodaySales(todayTotal);
 
     // Yesterday's sales
     const { data: yesterdaySalesData } = await getSalesByDateRange(yesterday, yesterday, selectedShops.length ? selectedShops : undefined);
-    const yesterdayTotal = yesterdaySalesData?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const yesterdayTotal = yesterdaySalesData?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
     setYesterdaySales(yesterdayTotal);
 
     // Today's expenses
     const { data: todayExpensesData } = await getExpensesByDateRange(today, today, selectedShops.length ? selectedShops : undefined);
-    const todayExpTotal = todayExpensesData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const todayExpTotal = todayExpensesData?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
     setTodayExpenses(todayExpTotal);
 
     // Yesterday's expenses
     const { data: yesterdayExpensesData } = await getExpensesByDateRange(yesterday, yesterday, selectedShops.length ? selectedShops : undefined);
-    const yesterdayExpTotal = yesterdayExpensesData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const yesterdayExpTotal = yesterdayExpensesData?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
     setYesterdayExpenses(yesterdayExpTotal);
 
     // This week's payroll
     const { data: weekPayrollData } = await getPayrollsByDateRange(weekStart, weekEnd, selectedShops.length ? selectedShops : undefined);
-    const weekPayrollTotal = weekPayrollData?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    const weekPayrollTotal = weekPayrollData?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
     setWeekPayroll(weekPayrollTotal);
 
     // This week's profit
     const { data: weekSalesData } = await getSalesByDateRange(weekStart, weekEnd, selectedShops.length ? selectedShops : undefined);
-    const weekSalesTotal = weekSalesData?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const weekSalesTotal = weekSalesData?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
     const { data: weekExpensesData } = await getExpensesByDateRange(weekStart, weekEnd, selectedShops.length ? selectedShops : undefined);
-    const weekExpensesTotal = weekExpensesData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const weekExpensesTotal = weekExpensesData?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
     const weekProfitTotal = weekSalesTotal - weekExpensesTotal - weekPayrollTotal;
     setWeekProfit(weekProfitTotal);
 
     // Last week's profit
     const { data: lastWeekSalesData } = await getSalesByDateRange(lastWeekStart, lastWeekEnd, selectedShops.length ? selectedShops : undefined);
-    const lastWeekSalesTotal = lastWeekSalesData?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const lastWeekSalesTotal = lastWeekSalesData?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
     const { data: lastWeekExpensesData } = await getExpensesByDateRange(lastWeekStart, lastWeekEnd, selectedShops.length ? selectedShops : undefined);
-    const lastWeekExpensesTotal = lastWeekExpensesData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const lastWeekExpensesTotal = lastWeekExpensesData?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
     const { data: lastWeekPayrollData } = await getPayrollsByDateRange(lastWeekStart, lastWeekEnd, selectedShops.length ? selectedShops : undefined);
-    const lastWeekPayrollTotal = lastWeekPayrollData?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    const lastWeekPayrollTotal = lastWeekPayrollData?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
     const lastWeekProfitTotal = lastWeekSalesTotal - lastWeekExpensesTotal - lastWeekPayrollTotal;
     setLastWeekProfit(lastWeekProfitTotal);
 
@@ -106,8 +106,8 @@ function DashboardContent() {
       const { data: dayExpenses } = await getExpensesByDateRange(date, date, selectedShops.length ? selectedShops : undefined);
       chartDataTemp.push({
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        Sales: daySales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0,
-        Expenses: dayExpenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0,
+        Sales: daySales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0,
+        Expenses: dayExpenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0,
       });
     }
     setChartData(chartDataTemp);
@@ -123,7 +123,7 @@ function DashboardContent() {
     // Expense trends by category
     const { data: allExpenses } = await getExpensesByDateRange(subDays(today, 30), today, selectedShops.length ? selectedShops : undefined);
     const categoryMap = new Map();
-    allExpenses?.forEach(e => {
+    allExpenses?.forEach((e: any) => {
       const cat = e.expense_categories?.name || 'Other';
       categoryMap.set(cat, (categoryMap.get(cat) || 0) + Number(e.amount));
     });
@@ -135,8 +135,8 @@ function DashboardContent() {
     
     // Cash vs Digital
     const { data: recentSales } = await getSalesByDateRange(subDays(today, 7), today, selectedShops.length ? selectedShops : undefined);
-    const totalCash = recentSales?.reduce((sum, s) => sum + Number(s.cash_amount), 0) || 0;
-    const totalSales = recentSales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const totalCash = recentSales?.reduce((sum: number, s: any) => sum + Number(s.cash_amount), 0) || 0;
+    const totalSales = recentSales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
     setCashVsDigital({ cash: totalCash, digital: totalSales - totalCash });
     
     setLoading(false);
@@ -153,9 +153,9 @@ function DashboardContent() {
       const { data: expenses } = await getExpensesByDateRange(startDate, endDate, [shop.id]);
       const { data: payrolls } = await getPayrollsByDateRange(startDate, endDate, [shop.id]);
 
-      const totalSales = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-      const totalExpenses = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-      const totalPayroll = payrolls?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+      const totalSales = sales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+      const totalExpenses = expenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
+      const totalPayroll = payrolls?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
       const profit = totalSales - totalExpenses - totalPayroll;
 
       profitData.push({
@@ -186,7 +186,7 @@ function DashboardContent() {
   async function checkAlerts() {
     const currentHour = new Date().getHours();
     const currentDay = getDay(new Date());
-    const alertsList = [];
+    const alertsList: any[] = [];
 
     // Check missing sales (after 6 PM)
     if (currentHour >= 18) {
@@ -194,8 +194,8 @@ function DashboardContent() {
       const today = new Date();
       const { data: todaySales } = await getSalesByDateRange(today, today);
       
-      shops?.forEach(shop => {
-        const hasSale = todaySales?.some(s => s.shop_id === shop.id);
+      shops?.forEach((shop: any) => {
+        const hasSale = todaySales?.some((s: any) => s.shop_id === shop.id);
         if (!hasSale) {
           alertsList.push({
             type: 'sales',
@@ -215,8 +215,8 @@ function DashboardContent() {
       const lastWeekEnd = getPayrollWeekEnd(subDays(new Date(), 7), settings.payrollWeekStartDay);
       const { data: payrolls } = await getPayrollsByDateRange(lastWeekStart, lastWeekEnd);
       
-      shops?.forEach(shop => {
-        const hasPayroll = payrolls?.some(p => p.shop_id === shop.id);
+      shops?.forEach((shop: any) => {
+        const hasPayroll = payrolls?.some((p: any) => p.shop_id === shop.id);
         if (!hasPayroll) {
           alertsList.push({
             type: 'payroll',

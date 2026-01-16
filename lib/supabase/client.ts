@@ -1,7 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/lib/types/database';
+import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+export const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Add this - it syncs auth changes to cookies automatically
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('[AUTH STATE CHANGE]', event, session ? 'HAS SESSION' : 'NO SESSION')
+})

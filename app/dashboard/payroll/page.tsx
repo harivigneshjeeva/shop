@@ -85,11 +85,11 @@ function PayrollContent() {
     if (data) {
       if (dateFilterType === 'weekly') {
         setPayrolls(data);
-        const total = data.reduce((sum, p) => sum + Number(p.total_amount), 0);
+        const total = data.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0);
         setTotalPayroll(total);
       } else if (dateFilterType === 'monthly') {
         const monthlyData: Record<string, { amount: number, count: number, month: string, entries: any[] }> = {};
-        data.forEach(p => {
+        data.forEach((p: any) => {
           const monthKey = format(new Date(p.week_end), 'yyyy-MM');
           const monthLabel = format(new Date(p.week_end), 'MMMM yyyy');
           if (!monthlyData[monthKey]) {
@@ -117,7 +117,7 @@ function PayrollContent() {
         setTotalPayroll(total);
       } else if (dateFilterType === 'yearly') {
         const yearlyData: Record<string, { amount: number, count: number, year: string, entries: any[] }> = {};
-        data.forEach(p => {
+        data.forEach((p: any) => {
           const yearKey = format(new Date(p.week_end), 'yyyy');
           if (!yearlyData[yearKey]) {
             yearlyData[yearKey] = { amount: 0, count: 0, year: yearKey, entries: [] };
@@ -140,11 +140,11 @@ function PayrollContent() {
             entries: val.entries
           }));
         setPayrolls(grouped);
-        const total = grouped.reduce((sum, p) => sum + Number(p.total_amount), 0);
+        const total = grouped.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0);
         setTotalPayroll(total);
       } else {
         setPayrolls(data);
-        const total = data.reduce((sum, p) => sum + Number(p.total_amount), 0);
+        const total = data.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0);
         setTotalPayroll(total);
       }
     }

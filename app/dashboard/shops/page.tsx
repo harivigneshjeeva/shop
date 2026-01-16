@@ -68,7 +68,7 @@ export default function ShopsPage() {
       : 'This shop will be available for new entries.';
     
     if (!confirm(message)) return;
-    await updateShop(shop.id, { ...shop, status: newStatus });
+    await updateShop(shop.id, { name: shop.name, city: shop.city || undefined, status: newStatus });
     loadShops();
   }
 

@@ -34,9 +34,9 @@ function ReportsContent() {
     const { data: expenses } = await getExpensesByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     const { data: payrolls } = await getPayrollsByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
 
-    const totalSales = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-    const totalExpenses = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
-    const totalPayroll = payrolls?.reduce((sum, p) => sum + Number(p.total_amount), 0) || 0;
+    const totalSales = sales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+    const totalExpenses = expenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
+    const totalPayroll = payrolls?.reduce((sum: number, p: any) => sum + Number(p.total_amount), 0) || 0;
     const profit = totalSales - totalExpenses - totalPayroll;
 
     setReportData({
@@ -84,8 +84,8 @@ function ReportsContent() {
     exportToCSV(reportExport, 'full_report');
   }
 
-  function exportSummaryByShop() {
-    const { data: shops } = getShops(true);
+  async function exportSummaryByShop() {
+    const { data: shops } = await getShops(true);
     const summaryData = reportData.sales.reduce((acc: any, sale: any) => {
       const shopId = sale.shop_id;
       if (!acc[shopId]) {

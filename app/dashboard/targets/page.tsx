@@ -58,7 +58,7 @@ export default function TargetsPage() {
       }
 
       const { data: sales } = await getSalesByDateRange(startDate, endDate, [target.shop_id]);
-      const actual = sales?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+      const actual = sales?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
       const percentage = (actual / Number(target.sales_target)) * 100;
       
       achievementMap[target.id] = { actual, percentage };

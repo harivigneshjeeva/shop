@@ -34,8 +34,8 @@ function ForecastingContent() {
     const { data: recent30 } = await getSalesByDateRange(last30Days, today, selectedShops.length ? selectedShops : undefined);
     const { data: previous30 } = await getSalesByDateRange(last60Days, last30Days, selectedShops.length ? selectedShops : undefined);
 
-    const recent30Total = recent30?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-    const previous30Total = previous30?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
+    const recent30Total = recent30?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+    const previous30Total = previous30?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
 
     // Calculate growth rate
     const growth = previous30Total > 0 ? ((recent30Total - previous30Total) / previous30Total) * 100 : 0;
@@ -70,7 +70,7 @@ function ForecastingContent() {
     const { data: seasonal } = await getSalesByDateRange(last90Days, today, selectedShops.length ? selectedShops : undefined);
     
     const weeklyData: Record<string, number> = {};
-    seasonal?.forEach(s => {
+    seasonal?.forEach((s: any) => {
       const week = format(new Date(s.sale_date), 'MMM dd');
       weeklyData[week] = (weeklyData[week] || 0) + Number(s.total_amount);
     });
@@ -82,7 +82,7 @@ function ForecastingContent() {
 
     // Expense forecast
     const { data: expenses } = await getExpensesByDateRange(last30Days, today, selectedShops.length ? selectedShops : undefined);
-    const expenseTotal = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+    const expenseTotal = expenses?.reduce((sum: number, e: any) => sum + Number(e.amount), 0) || 0;
     const expenseAvg = expenseTotal / 30;
     setExpenseForecast(expenseAvg * 30);
 

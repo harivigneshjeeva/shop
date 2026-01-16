@@ -64,8 +64,8 @@ function SalesContent() {
     const { data } = await getSalesByDateRange(startDate, endDate, selectedShops.length ? selectedShops : undefined);
     if (data) {
       setSales(data);
-      const total = data.reduce((sum, s) => sum + Number(s.total_amount), 0);
-      const cash = data.reduce((sum, s) => sum + Number(s.cash_amount), 0);
+      const total = data.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0);
+      const cash = data.reduce((sum: number, s: any) => sum + Number(s.cash_amount), 0);
       setTotalSales(total);
       setTotalCash(cash);
 
@@ -74,8 +74,8 @@ function SalesContent() {
       const prevStart = subDays(startDate, daysDiff);
       const prevEnd = subDays(endDate, daysDiff);
       const { data: prevData } = await getSalesByDateRange(prevStart, prevEnd, selectedShops.length ? selectedShops : undefined);
-      const prevTotal = prevData?.reduce((sum, s) => sum + Number(s.total_amount), 0) || 0;
-      const prevCash = prevData?.reduce((sum, s) => sum + Number(s.cash_amount), 0) || 0;
+      const prevTotal = prevData?.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0) || 0;
+      const prevCash = prevData?.reduce((sum: number, s: any) => sum + Number(s.cash_amount), 0) || 0;
       setPrevTotalSales(prevTotal);
       setPrevTotalCash(prevCash);
 
@@ -83,12 +83,12 @@ function SalesContent() {
       const days = eachDayOfInterval({ start: startDate, end: endDate });
       const prevDays = eachDayOfInterval({ start: prevStart, end: prevEnd });
       const trend = days.map((day, idx) => {
-        const daySales = data.filter(s => formatDate(s.sale_date) === formatDate(day));
-        const prevDaySales = prevData?.filter(s => formatDate(s.sale_date) === formatDate(prevDays[idx])) || [];
+        const daySales = data.filter((s: any) => formatDate(s.sale_date) === formatDate(day));
+        const prevDaySales = prevData?.filter((s: any) => formatDate(s.sale_date) === formatDate(prevDays[idx])) || [];
         return {
           day: formatDateFns(day, 'EEE'),
-          current: daySales.reduce((sum, s) => sum + Number(s.total_amount), 0),
-          previous: prevDaySales.reduce((sum, s) => sum + Number(s.total_amount), 0)
+          current: daySales.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0),
+          previous: prevDaySales.reduce((sum: number, s: any) => sum + Number(s.total_amount), 0)
         };
       });
       setTrendData(trend);
@@ -101,7 +101,7 @@ function SalesContent() {
 
       // Sales by shop
       const shopSales: Record<string, number> = {};
-      data.forEach(s => {
+      data.forEach((s: any) => {
         const shopName = s.shops?.name || 'Unknown';
         shopSales[shopName] = (shopSales[shopName] || 0) + Number(s.total_amount);
       });
@@ -135,7 +135,7 @@ function SalesContent() {
     // Anomaly detection
     if (formData.shop_id && totalNum > 0) {
       const { data: historicalSales } = await getSalesByDateRange(subDays(new Date(), 30), new Date(), [formData.shop_id]);
-      const historical = historicalSales?.map(s => Number(s.total_amount)) || [];
+      const historical = historicalSales?.map((s: any) => Number(s.total_amount)) || [];
       const anomaly = detectAnomaly(totalNum, historical);
       if (anomaly.isAnomaly) {
         newWarnings.total_amount = anomaly.message!;
@@ -193,7 +193,7 @@ function SalesContent() {
   }
 
   function handleExport() {
-    const exportData = sales.map(s => ({
+    const exportData = sales.map((s: any) => ({
       Date: formatDate(s.sale_date),
       Shop: s.shops?.name,
       'Total Sales': s.total_amount,
