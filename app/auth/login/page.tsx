@@ -209,7 +209,14 @@ export default function LoginPage() {
     console.log('LOGIN: session is', data.session);
 
     console.log('LOGIN: navigating to dashboard');
-    router.push('/dashboard');
+    
+    // On mobile, use hard refresh to ensure middleware validates the session properly
+    // This prevents the "stuck on signing in" issue on mobile devices
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      window.location.href = '/dashboard';
+    } else {
+      router.replace('/dashboard');
+    }
 
   } catch (err) {
     console.error('LOGIN: unexpected error', err);
