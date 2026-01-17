@@ -239,9 +239,56 @@ function ExpensesContent() {
             {chartData.length > 0 ? (
               <div className="flex items-center gap-3">
                 <div className="flex-1">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40} paddingAngle={5}>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                      <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={70}
+                        innerRadius={40}
+                        paddingAngle={5}
+                        label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius = outerRadius + 15;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                          
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#666"
+                              textAnchor={x > cx ? 'start' : 'end'}
+                              dominantBaseline="middle"
+                              fontSize="11"
+                            >
+                              {formatCurrency(value)}
+                            </text>
+                          );
+                        }}
+                        labelLine={({ cx, cy, midAngle, outerRadius }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius = outerRadius + 10;
+                          const x1 = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y1 = cy + radius * Math.sin(-midAngle * RADIAN);
+                          const x2 = cx + (outerRadius + 15) * Math.cos(-midAngle * RADIAN);
+                          const y2 = cy + (outerRadius + 15) * Math.sin(-midAngle * RADIAN);
+                          
+                          return (
+                            <line
+                              x1={x1}
+                              y1={y1}
+                              x2={x2}
+                              y2={y2}
+                              stroke="#999"
+                              strokeWidth="1"
+                            />
+                          );
+                        }}
+                      >
                         {chartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
@@ -267,55 +314,117 @@ function ExpensesContent() {
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl lg:text-3xl font-bold">{formatCurrency(totalExpenses)}</p>
-          </CardContent>
-        </Card>
-        <Card>
+      <div className="hidden lg:grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
+        {/* Stats Column - 25% */}
+        <div className="lg:col-span-1 space-y-1">
+          <Card className="p-2">
+            <CardHeader className="p-0 mb-1">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Total Expenses</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="text-xl lg:text-2xl font-bold">{formatCurrency(totalExpenses)}</p>
+            </CardContent>
+          </Card>
+          <Card className="p-2">
+            <CardHeader className="p-0 mb-1">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Expenses Count</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="text-xl lg:text-2xl font-bold">{expenses.length}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {expenses.length > 0 ? `Avg: ${formatCurrency(totalExpenses / expenses.length)}` : 'No entries'}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="p-2">
+            <CardHeader className="p-0 mb-1">
+              <CardTitle className="text-xs font-medium text-muted-foreground">By Category</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="text-xl lg:text-2xl font-bold">{chartData.length}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Expense categories</p>
+            </CardContent>
+          </Card>
+        </div>
+        {/* Chart Column - 75% */}
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">Expense Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                      <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={60}
+                        innerRadius={30}
+                        paddingAngle={5}
+                        label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius = outerRadius + 12;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                          
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#666"
+                              textAnchor={x > cx ? 'start' : 'end'}
+                              dominantBaseline="middle"
+                              fontSize="10"
+                            >
+                              {formatCurrency(value)}
+                            </text>
+                          );
+                        }}
+                        labelLine={({ cx, cy, midAngle, outerRadius }) => {
+                          const RADIAN = Math.PI / 180;
+                          const radius = outerRadius + 8;
+                          const x1 = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y1 = cy + radius * Math.sin(-midAngle * RADIAN);
+                          const x2 = cx + (outerRadius + 12) * Math.cos(-midAngle * RADIAN);
+                          const y2 = cy + (outerRadius + 12) * Math.sin(-midAngle * RADIAN);
+                          
+                          return (
+                            <line
+                              x1={x1}
+                              y1={y1}
+                              x2={x2}
+                              y2={y2}
+                              stroke="#999"
+                              strokeWidth="1"
+                            />
+                          );
+                        }}
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex flex-col gap-2 min-w-[80px]">
+                  {chartData.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2 text-sm">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                      <span className="truncate">{entry.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <p className="text-muted-foreground text-center py-8">No data</p>
             )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Expenses Count</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl lg:text-3xl font-bold">{expenses.length}</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              {expenses.length > 0 ? `Avg: ${formatCurrency(totalExpenses / expenses.length)}` : 'No entries'}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">By Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl lg:text-3xl font-bold">{chartData.length}</p>
-            <p className="text-sm text-muted-foreground mt-2">Expense categories</p>
           </CardContent>
         </Card>
       </div>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Multi-Shop Profit Intelligence Dashboard',
   manifest: '/manifest.json',
   themeColor: '#3b82f6',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
